@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import openai
 import os
 
-# Vercelが探している「app」という窓口を定義します
+# Vercelが認識するための窓口
 app = Flask(__name__, static_folder='.')
 
 client = openai.OpenAI(
@@ -12,7 +12,7 @@ client = openai.OpenAI(
 
 @app.route('/')
 def index():
-    # index.htmlを表示させます
+    # トップページとして index.html を返す
     return send_from_directory('.', 'index.html')
 
 @app.route('/api/generate', methods=['POST'])
@@ -23,7 +23,7 @@ def generate():
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
-            {"role": "system", "content": "あなたはシニアPMです。シーケンス図を作成してください。"},
+            {"role": "system", "content": "あなたは優秀なPMです。"},
             {"role": "user", "content": user_input}
         ]
     )
