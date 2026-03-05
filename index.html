@@ -20,7 +20,7 @@
             const input = document.getElementById('userInput').value;
             const output = document.getElementById('output');
             output.innerText = "生成中...";
-            const res = await fetch('/api/generate', {
+            const res = await fetch('/api', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({input})
