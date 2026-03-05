@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMアシスタント</title>
+    <title>PMツール</title>
     <style>
         body { font-family: sans-serif; padding: 20px; text-align: center; background: #f0f2f5; }
         input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
         button { width: 90%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; }
-        #output { text-align: left; background: white; padding: 15px; margin-top: 20px; border-radius: 8px; white-space: pre-wrap; font-size: 14px; min-height: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #output { text-align: left; background: white; padding: 15px; margin-top: 20px; border-radius: 8px; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -16,24 +15,18 @@
     <input type="text" id="userInput" placeholder="例：ログイン機能の設計">
     <button onclick="send()">生成する</button>
     <div id="output">ここに結果が出ます</div>
-
     <script>
         async function send() {
             const input = document.getElementById('userInput').value;
             const output = document.getElementById('output');
-            if(!input) return alert("内容を入力してください");
-            output.innerText = "AIが思考中...";
-            try {
-                const res = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({input})
-                });
-                const data = await res.json();
-                output.innerText = data.content;
-            } catch (e) {
-                output.innerText = "エラーが発生しました。Vercelの環境変数を確認してください。";
-            }
+            output.innerText = "生成中...";
+            const res = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({input})
+            });
+            const data = await res.json();
+            output.innerText = data.content;
         }
     </script>
 </body>
