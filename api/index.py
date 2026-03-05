@@ -21,9 +21,10 @@ def generate():
     try:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
+            # api/index.py の messages 部分を少し変更
             messages=[
-                {"role": "system", "content": "あなたは優秀なPMです。設計図を作成してください。"},
-                {"role": "user", "content": user_input}
+    {"role": "system", "content": "あなたは優秀なPMです。設計図を日本語で解説し、最後に必ずMermaid形式のsequenceDiagramコードを ```mermaid と ``` で囲んで出力してください。"},
+    {"role": "user", "content": user_input}
             ]
         )
         return jsonify({"content": response.choices[0].message.content})

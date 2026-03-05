@@ -1,32 +1,62 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMツール</title>
+    <title>PMツール - Mermaid版</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({ startOnLoad: false });</script>
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; background: #f0f2f5; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
-        button { width: 90%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; font-weight: bold; }
-        #output { text-align: left; background: white; padding: 15px; margin-top: 20px; border-radius: 8px; white-space: pre-wrap; }
+        body { font-family: sans-serif; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #output-text { background: white; padding: 15px; margin-top: 20px; border-radius: 8px; white-space: pre-wrap; font-size: 14px; border-left: 5px solid #28a745; }
+        .mermaid { background: white; padding: 10px; border-radius: 8px; margin-top: 20px; overflow-x: auto; }
     </style>
 </head>
 <body>
-    <h2>⚙️ 設計図作成くん</h2>
-    <input type="text" id="userInput" placeholder="例：ログイン機能の設計">
-    <button onclick="send()">生成する</button>
-    <div id="output">ここに結果が出ます</div>
+    <div class="container">
+        <h2>📊 シーケンス図作成くん</h2>
+        <input type="text" id="userInput" placeholder="例：ログイン処理のシーケンス図">
+        <button onclick="send()">図解を生成する</button>
+        
+        <div id="mermaid-graph" class="mermaid"></div>
+        <div id="output-text">ここに解説が出ます</div>
+    </div>
+
     <script>
         async function send() {
             const input = document.getElementById('userInput').value;
-            const output = document.getElementById('output');
-            output.innerText = "生成中...";
-            const res = await fetch('/api', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({input})
-            });
-            const data = await res.json();
-            output.innerText = data.content;
+            const outputText = document.getElementById('output-text');
+            const mermaidDiv = document.getElementById('mermaid-graph');
+            
+            outputText.innerText = "AIが図解を設計中...";
+            mermaidDiv.innerHTML = ""; // 前の図を消す
+
+            try {
+                const res = await fetch('/api', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({input: input + "。必ずmermaid形式のsequenceDiagramコードを含めて回答してください。"})
+                });
+                const data = await res.json();
+                
+                // AIの回答からMermaidコード（sequenceDiagram...）だけを抽出
+                const content = data.content;
+                const mermaidCode = content.match(/```mermaid([\s\S]*?)```/)?.[1] || 
+                                   content.match(/(sequenceDiagram[\s\S]*)/)?.[1];
+
+                if (mermaidCode) {
+                    // Mermaid図を描画
+                    mermaidDiv.innerHTML = mermaidCode.trim();
+                    mermaid.contentLoaded();
+                    mermaid.init(undefined, mermaidDiv);
+                }
+                outputText.innerText = content;
+            } catch (e) {
+                outputText.innerText = "エラーが発生しました。";
+            }
         }
     </script>
 </body>
