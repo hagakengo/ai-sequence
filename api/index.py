@@ -1,17 +1,13 @@
-import sys
-print(f"DEBUG: PATH IS -> {sys.path}")
-print(f"DEBUG: CURRENT FILE IS -> {__file__}")
-print("DEBUG: NEW DEPLOYMENT ACTIVE")
 import os
 import psycopg2
+import requests
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# 保存関数
+# Neonへの保存処理
 def save_to_db(user_input, ai_content):
     db_url = os.environ.get("DATABASE_URL")
-    print(f"DEBUG: Start saving... URL exists: {db_url is not None}") # 確実にログを出す
     try:
         conn = psycopg2.connect(db_url, sslmode='require')
         cur = conn.cursor()
@@ -28,12 +24,21 @@ def save_to_db(user_input, ai_content):
 def generate():
     data = request.json
     user_input = data.get('input', '')
-    print(f"DEBUG: API Called with input: {user_input[:20]}") # リクエストが届いたことを確認
     
-    # AI処理は省略しますが、ここを維持してください
-    ai_content = "ここにAIの生成結果" 
+    # Groq APIへのリクエスト（mermaidを強制するプロンプト）
+    headers = {"Authorization": f"Bearer {os.environ.get('GROQ_API_KEY')}"}
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": f"{user_input}。必ず以下のようにMermaidのコードをMarkdown形式で囲んで出力してください。```mermaid\n(ここにコード)\n```"}]
+    }
     
-    # 呼び出し
+    response = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
+    ai_content = response.json()['choices'][0]['message']['content']
+    
+    # DBに保存
     save_to_db(user_input, ai_content)
     
     return jsonify({"content": ai_content})
+
+if __name__ == '__main__':
+    app.run()
