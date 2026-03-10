@@ -1,3 +1,6 @@
+import sys
+print(f"DEBUG: PATH IS -> {sys.path}")
+print(f"DEBUG: CURRENT FILE IS -> {__file__}")
 print("DEBUG: NEW DEPLOYMENT ACTIVE")
 import os
 import psycopg2
