@@ -2,25 +2,25 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIシーケンス図生成</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #output-text { background: #f4f4f4; padding: 10px; margin-top: 10px; white-space: pre-wrap; }
-        #mermaid-graph { margin-top: 20px; }
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        #output-text { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; border-radius: 5px; margin-top: 10px; white-space: pre-wrap; font-size: 0.9em; }
+        #mermaid-graph { margin-top: 20px; border: 1px solid #eee; padding: 10px; }
+        .mermaid { background: white; }
     </style>
 </head>
 <body>
     <h1>AIシーケンス図生成</h1>
-    <input type="text" id="userInput" placeholder="例: ログイン処理の図を作って" style="width: 300px;">
-    <button onclick="send()">生成する</button>
+    <input type="text" id="userInput" placeholder="例: 旅が始まる" style="width: 300px; padding: 8px;">
+    <button onclick="send()" style="padding: 8px 15px;">生成する</button>
 
     <div id="output-text">AIの回答がここに表示されます</div>
     <div id="mermaid-graph"></div>
 
     <script>
-        mermaid.initialize({ startOnLoad: false });
+        mermaid.initialize({ startOnLoad: false, theme: 'default' });
     </script>
     <script src="script.js"></script>
 </body>

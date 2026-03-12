@@ -3,10 +3,7 @@ async function send() {
     const outputText = document.getElementById('output-text');
     const mermaidDiv = document.getElementById('mermaid-graph');
 
-    if (!input) {
-        alert("テキストを入力してください");
-        return;
-    }
+    if (!input) return alert("内容を入力してください");
 
     outputText.innerText = "AIが図解を設計中...";
     mermaidDiv.innerHTML = "";
@@ -32,18 +29,17 @@ async function send() {
             mermaidCode = content.substring(start).split("```")[0].trim();
         }
 
-        // 描画
         if (mermaidCode) {
-            // IDを付けて、古い形式の初期化を呼び出す
-            mermaidDiv.innerHTML = `<div class="mermaid-container">${mermaidCode}</div>`;
-            const container = document.querySelector(".mermaid-container");
+            // 描画用の要素を作成
+            const pre = document.createElement("pre");
+            pre.className = "mermaid";
+            pre.textContent = mermaidCode;
+            mermaidDiv.appendChild(pre);
             
-            // Mermaidレンダリングを実行
-            await mermaid.run({
-                nodes: [container]
-            });
+            // Mermaidレンダリング実行
+            await mermaid.run({ nodes: [pre] });
         } else {
-            mermaidDiv.innerHTML = "図のデータが見つかりませんでした。";
+            mermaidDiv.innerHTML = "<p style='color:red;'>図のコードが見つかりませんでした。</p>";
         }
 
     } catch (err) {
