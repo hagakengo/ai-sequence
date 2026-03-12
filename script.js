@@ -3,9 +3,12 @@ async function send() {
     const outputText = document.getElementById('output-text');
     const mermaidDiv = document.getElementById('mermaid-graph');
 
-    if (!input) return alert("内容を入力してください");
+    if (!input) {
+        alert("テキストを入力してください");
+        return;
+    }
 
-    outputText.innerText = "AIが図解を設計中...";
+    outputText.innerText = "AIが思考中... データベースに保存を準備しています...";
     mermaidDiv.innerHTML = "";
 
     try {
@@ -15,6 +18,8 @@ async function send() {
             body: JSON.stringify({ input: input })
         });
 
+        if (!res.ok) throw new Error(`サーバーエラー: ${res.status}`);
+
         const data = await res.json();
         const content = data.content;
         outputText.innerText = content;
@@ -22,6 +27,7 @@ async function send() {
         // Mermaidコードの抽出
         let mermaidCode = "";
         const match = content.match(/```mermaid([\s\S]*?)```/);
+        
         if (match) {
             mermaidCode = match[1].trim();
         } else if (content.includes("sequenceDiagram")) {
@@ -29,21 +35,21 @@ async function send() {
             mermaidCode = content.substring(start).split("```")[0].trim();
         }
 
+        // 描画処理
         if (mermaidCode) {
-            // 描画用の要素を作成
             const pre = document.createElement("pre");
             pre.className = "mermaid";
             pre.textContent = mermaidCode;
             mermaidDiv.appendChild(pre);
             
-            // Mermaidレンダリング実行
+            // Mermaidレンダリングを実行
             await mermaid.run({ nodes: [pre] });
         } else {
-            mermaidDiv.innerHTML = "<p style='color:red;'>図のコードが見つかりませんでした。</p>";
+            mermaidDiv.innerHTML = "<p style='color:orange;'>図のコードが生成されませんでした。文章を確認してください。</p>";
         }
 
     } catch (err) {
         console.error("Error:", err);
-        outputText.innerText = "エラー: " + err.message;
+        outputText.innerText = "エラーが発生しました: " + err.message;
     }
 }
