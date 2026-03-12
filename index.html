@@ -8,7 +8,7 @@
         body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
         .main { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
         #mermaid-graph { margin: 20px 0; overflow-x: auto; }
-        .controls { margin-top: 10px; }
+        button { padding: 10px; margin: 5px; }
     </style>
 </head>
 <body>
@@ -16,17 +16,15 @@
         <h1>AI図解スタジオ</h1>
         <input type="text" id="userInput" style="width: 70%; padding: 10px;">
         <button onclick="send()">生成</button>
-        
         <div class="controls">
             <button onclick="changeTheme('default')">デフォルト</button>
             <button onclick="changeTheme('forest')">フォレスト</button>
             <button onclick="changeTheme('dark')">ダーク</button>
             <button onclick="downloadPNG()">PNGダウンロード</button>
         </div>
-        
         <div id="mermaid-graph"></div>
         <h3>履歴</h3>
-        <div id="history-list"></div>
+        <ul id="history-list"></ul>
     </div>
     <script>mermaid.initialize({ startOnLoad: false });</script>
     <script src="script.js"></script>

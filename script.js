@@ -9,8 +9,8 @@ async function send() {
 function renderMermaid(content) {
     const match = content.match(/```mermaid([\s\S]*?)```/);
     if (match) {
-        const mermaidDiv = document.getElementById('mermaid-graph');
-        mermaidDiv.innerHTML = `<div class="mermaid">${match[1]}</div>`;
+        const div = document.getElementById('mermaid-graph');
+        div.innerHTML = `<pre class="mermaid">${match[1].trim()}</pre>`;
         mermaid.run();
     }
 }
@@ -22,8 +22,7 @@ function changeTheme(theme) {
 
 async function downloadPNG() {
     const svg = document.querySelector('svg');
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svg);
+    const source = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement("canvas");
     const img = new Image();
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(source)));
