@@ -20,10 +20,9 @@ def generate():
     payload = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "MermaidのsequenceDiagramを生成。必ず各命令の後に改行を含めること。Note overは禁止。"},
-            {"role": "user", "content": f"{user_input}。mermaidコードを```mermaid で囲んでください。"}
-        ],
-        "temperature": 0.1
+            {"role": "system", "content": "あなたはMermaid専門家です。シーケンス図のみを生成してください。出力形式は必ず ```mermaid {code} ``` とし、{code}内には必ず適切な改行を入れてください。Note overは避けてください。"},
+            {"role": "user", "content": user_input}
+        ]
     }
     
     res = requests.post(url, json=payload, headers=headers).json()

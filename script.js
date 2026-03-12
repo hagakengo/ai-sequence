@@ -13,19 +13,15 @@ async function send() {
         });
         const data = await res.json();
         
-        // --- 修正箇所: AIの回答を強引にMermaid形式に整形 ---
-        let rawContent = data.content;
-        // ```mermaid を除去
-        let cleanCode = rawContent.replace(/```mermaid/g, '').replace(/```/g, '').trim();
-        // 文法キーワードの前に強制的に改行を入れる
-        cleanCode = cleanCode
-            .replace(/participant/g, '\nparticipant')
-            .replace(/Note/g, '\nNote')
-            .replace(/->>/g, '\n->>')
-            .replace(/sequenceDiagram/g, 'sequenceDiagram\n');
-        // ---------------------------------------------
-
-        renderMermaid(cleanCode);
+        // AIの回答からmermaidコードを抽出
+        let code = data.content;
+        const match = code.match(/```mermaid([\s\S]*?)```/);
+        if (match) {
+            code = match[1].trim();
+        }
+        
+        // 図を描画
+        renderMermaid(code);
         loadHistory();
     } catch (err) {
         mermaidDiv.innerHTML = "エラー: " + err.message;
@@ -34,7 +30,7 @@ async function send() {
 
 function renderMermaid(code) {
     const mermaidDiv = document.getElementById('mermaid-graph');
-    // <pre class="mermaid"> に入れることで、ライブラリが自動検知します
+    // 一旦プレーンテキストとしてpreタグに入れ、mermaid.runで変換させる
     mermaidDiv.innerHTML = `<pre class="mermaid">${code}</pre>`;
     mermaid.run();
 }
@@ -44,7 +40,24 @@ function changeTheme(theme) {
     mermaid.run();
 }
 
-// 履歴とダウンロードはそのまま
+async function downloadPNG() {
+    const svg = document.querySelector('svg');
+    if (!svg) return alert("図が生成されていません");
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const img = new Image();
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(source)));
+    img.onload = () => {
+        canvas.width = img.width; canvas.height = img.height;
+        canvas.getContext("2d").drawImage(img, 0, 0);
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download = "diagram.png";
+        a.click();
+    };
+}
+
 async function loadHistory() {
     const res = await fetch('/api/history');
     const history = await res.json();
