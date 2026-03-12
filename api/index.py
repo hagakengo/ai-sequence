@@ -20,8 +20,8 @@ def generate():
     payload = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
-            {"role": "system", "content": "あなたはMermaid専門家です。シーケンス図のみを生成してください。出力形式は必ず ```mermaid {code} ``` とし、{code}内には必ず適切な改行を入れてください。Note overは避けてください。"},
-            {"role": "user", "content": user_input}
+            {"role": "system", "content": "Mermaidのシーケンス図のみ生成すること。Note overでの複数人指定は禁止。必ず正確なMermaid構文で出力せよ。"},
+            {"role": "user", "content": f"{user_input} をMermaidシーケンス図で出力。```mermaid で囲むこと。"}
         ]
     }
     
