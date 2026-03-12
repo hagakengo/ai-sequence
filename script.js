@@ -4,7 +4,7 @@ async function send() {
     const mermaidDiv = document.getElementById('mermaid-graph');
 
     if (!input) {
-        alert("入力欄にテキストを入力してください！");
+        alert("テキストを入力してください");
         return;
     }
 
@@ -12,45 +12,42 @@ async function send() {
     mermaidDiv.innerHTML = "";
 
     try {
-        // Vercel上のFlask API (/api) にリクエストを送信
         const res = await fetch('/api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                input: input + "。必ずmermaid形式のsequenceDiagramコードを含めて回答してください。"
-            })
+            body: JSON.stringify({ input: input })
         });
-
-        if (!res.ok) throw new Error("サーバーからの応答がありません。");
 
         const data = await res.json();
         const content = data.content;
-
-        // 1. 全文をテキストエリアに表示
         outputText.innerText = content;
 
-        // 2. Mermaidコードの抽出（Markdownのバッククォート囲みを探す）
+        // Mermaidコードの抽出
         let mermaidCode = "";
         const match = content.match(/```mermaid([\s\S]*?)```/);
-        
         if (match) {
             mermaidCode = match[1].trim();
         } else if (content.includes("sequenceDiagram")) {
-            // もし囲みがない場合でも、キーワードから抽出を試みる
             const start = content.indexOf("sequenceDiagram");
             mermaidCode = content.substring(start).split("```")[0].trim();
         }
 
-        // 3. 描画処理
+        // 描画
         if (mermaidCode) {
-            mermaidDiv.innerHTML = `<pre class="mermaid">${mermaidCode}</pre>`;
-            // Mermaidライブラリを使って図を描画
-            await mermaid.run({ nodes: [mermaidDiv] });
+            // IDを付けて、古い形式の初期化を呼び出す
+            mermaidDiv.innerHTML = `<div class="mermaid-container">${mermaidCode}</div>`;
+            const container = document.querySelector(".mermaid-container");
+            
+            // Mermaidレンダリングを実行
+            await mermaid.run({
+                nodes: [container]
+            });
         } else {
-            mermaidDiv.innerHTML = "図のデータが見つかりませんでした。テキストを確認してください。";
+            mermaidDiv.innerHTML = "図のデータが見つかりませんでした。";
         }
+
     } catch (err) {
-        console.error("エラー:", err);
-        outputText.innerText = "エラーが発生しました: " + err.message;
+        console.error("Error:", err);
+        outputText.innerText = "エラー: " + err.message;
     }
 }

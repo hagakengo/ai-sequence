@@ -1,12 +1,27 @@
-<input type="text" id="userInput" placeholder="例: ログイン処理のシーケンス図">
-<button onclick="send()">生成する</button>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIシーケンス図生成</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #output-text { background: #f4f4f4; padding: 10px; margin-top: 10px; white-space: pre-wrap; }
+        #mermaid-graph { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>AIシーケンス図生成</h1>
+    <input type="text" id="userInput" placeholder="例: ログイン処理の図を作って" style="width: 300px;">
+    <button onclick="send()">生成する</button>
 
-<div id="output-text"></div>
-<div id="mermaid-graph"></div>
+    <div id="output-text">AIの回答がここに表示されます</div>
+    <div id="mermaid-graph"></div>
 
-<script type="module">
-    import mermaid from '[https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs](https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs)';
-    mermaid.initialize({ startOnLoad: false });
-    window.mermaid = mermaid;
-</script>
-<script src="script.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: false });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
